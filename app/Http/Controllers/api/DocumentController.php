@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\api;
 
+use App\Dependency;
 use App\Document;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -23,9 +24,10 @@ class DocumentController extends Controller
      */
     public function index()
     {
-        $var = Storage::disk('local')->get('/uploads/1080256440.pdf');
-        return response($var, 200)->header('Content-Type', 'application/pdf');
-        
+        $documents = Document::with('response')->with('dependency.users')->get();
+        return response()->json([
+            'documents' => $documents
+        ],200);
     }
 
     /**
@@ -84,7 +86,16 @@ class DocumentController extends Controller
      */
     public function destroy(Document $document)
     {
-        //
+        Storage::disk('local')->delete('/uploads/'.$document->filePath);
+        if ($document->response) {
+            Storage::disk('local')->delete('/responses/'.$document->response->filePath);
+        }
+
+        $document->delete();
+
+        return response()->json([
+            'message' => 'Documento eliminado correctamente'
+        ],200);
     }
 
     public function generateVoucher($idDocument)
@@ -111,5 +122,25 @@ class DocumentController extends Controller
     public function getFileFromStorage($name){
         $file = Storage::disk('local')->get('/uploads/'.$name);
         return response($file, 200)->header('Content-Type', 'application/pdf');
+    }
+
+    public function asignDependency(Request $request){
+
+        $request->validate([
+            'id' => 'required',
+            'dependency_id' => 'required'
+        ],[
+            'id.required' => 'El documento es requerido',
+            'dependency_id.required' => 'La dependencia a asignar es obligatoria'
+        ]);
+
+        $document = Document::findOrFail($request->get('id'));
+        $document->dependency_id = $request->get('dependency_id');
+        $document->status = 1;
+        $document->update();
+
+        return response()->json([
+            'message' => 'Dependencia asignada correctamente'
+        ],201);
     }
 }

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateUserRequest;
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -21,8 +22,11 @@ class UserController extends Controller
     public function index()
     {
         $users = User::with('role')->with('dependency')->get();
-
-        return response()->json($users,200);
+        
+        return response()->json([
+            'users' => $users,
+            'user' => Auth::user()
+        ],200);
     }
 
     /**

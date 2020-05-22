@@ -48,8 +48,12 @@ Route::group([
     Route::get('documents/dependency','api\DocumentController@getForDependency');
     Route::get('documents/toasign','api\DocumentController@getWithOutDependency');
     Route::get('documents/file/{name}','api\DocumentController@getFileFromStorage');
+    Route::put('documents/asignDependency','api\DocumentController@asignDependency');
     Route::apiResource('documents','api\DocumentController');
 
+    //Response documents routes
+    Route::get('responses/download/{name}','api\ResponseDocumentController@getFileFromStorage');
+    Route::apiResource('responses','api\ResponseDocumentController');
 
     //Voucher routes
     Route::get('voucher/generate/{id}','api\DocumentController@generateVoucher');

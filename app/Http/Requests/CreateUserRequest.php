@@ -47,7 +47,8 @@ class CreateUserRequest extends FormRequest
             'password.confirmed' => 'La confirmación de contraseña no coincide',
             'position.required' => 'El cargo del usuario es requerido',
             'role_id.required' => 'El rol del usuario es requerido',
-            'dependency_id.required_if' => 'La dependencia del usuario es requerida'
+            'dependency_id.required_if' => 'La dependencia del usuario es requerida',
+            'email.unique' => 'Esta dirección de correo ya está en uso'
         ];
     }
 }
